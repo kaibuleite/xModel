@@ -1,0 +1,6 @@
+framework module xModel {
+  umbrella header "xModel-umbrella.h"
+
+  export *
+  module * { export * }
+}
