@@ -12,18 +12,18 @@ import UIKit
 open class xModel: NSObject {
     
     // MARK: - Public Property
-    /// 自定义id
-    public var xid = 0
-    /// 模拟数据
-    public var xContent = "测试内容:\(arc4random() % 10000)"
+    /// 创建编号(自增)
+    public var xCreateNumber = 0
+    /// 自定义测试数据
+    public var xDebugContent = "测试内容:\(arc4random() % 10000)"
     /// 原始字典
-    public var xOrigin = [String : Any]()
+    public var xOriginDictionary = [String : Any]()
     /// 是否打印服务器缺失成员变量（默认不打印）
-    public var xIsLogModelNoPropertyTip = false
+    open var xIsLogModelNoPropertyTip : Bool { return false }
     
     // MARK: - Private Property
     /// 计数器
-    private static var xModelCount = 0
+    private static var xModelCreateCount = 0
     /// 成员变量列表
     private lazy var ivarList : [String] = {
         let ret = xGetIvarList(obj: self)
@@ -36,44 +36,31 @@ open class xModel: NSObject {
                                 forKey key: String)
     {
         guard value != nil else { return }
-        // 注意数据类型
         if let obj = value as? String {
+            // 字符串类型直接赋值
             super.setValue(obj, forKey: key)
-        }
-        // 数字类型转换成字符串
-        else
-        if let obj = value as? Int {
+        } else if let obj = value as? Int {
+            // 数字类型转换成字符串
             super.setValue(String(obj), forKey: key)
-        }
-        // 数字类型转换成字符串
-        else
-        if let obj = value as? Float {
+        } else if let obj = value as? Float {
+            // 数字类型转换成字符串
             super.setValue(String(obj), forKey: key)
-        }
-        // 数字类型转换成字符串
-        else
-        if let obj = value as? Double {
+        } else if let obj = value as? Double {
+            // 数字类型转换成字符串
             super.setValue(String(obj), forKey: key)
-        }
-        // 数组类型
-        else
-        if let obj = value as? Array<Any> {
+        } else if let obj = value as? Array<Any> {
+            // 数组类型直接赋值
             super.setValue(obj, forKey: key)
-        }
-        // 字典类型
-        else
-        if let obj = value as? Dictionary<String, Any> {
+        } else if let obj = value as? Dictionary<String, Any> {
+            // 字典类型直接赋值
             super.setValue(obj, forKey: key)
-        }
-        // xModel
-        else
-        if let obj = value as? xModel {
+        } else if let obj = value as? xModel {
+            // xModel对象类型
             guard let sobj = self.value(forKey: key) as? xModel else { return }
             // xLog(sobj, obj)
             guard sobj.isMember(of: obj.classForCoder) else { return }
             sobj.copyIvarData(from: obj)
-        }
-        else {
+        } else {
             print("⚠️ 成员变量的数据格式不是常用类型,请确认:\(key) = \(value!), \(type(of: value))")
             super.setValue(value, forKey: key)
         }
@@ -86,12 +73,11 @@ open class xModel: NSObject {
         let classname = type(of: self)
         var str = "【\(classname)】找不到成员【\(key)】 = "
         if value != nil {
-            str.append("\(value!)")
+            str += "\(value!)"
+        } else {
+            str += "nil"
         }
-        else {
-            str.append("nil")
-        }
-        print("⚠️ å\(str)")
+        print("⚠️ \(str)")
     }
     /// 找不到key对应的value
     open override func value(forUndefinedKey key: String) -> Any? {
@@ -104,8 +90,8 @@ open class xModel: NSObject {
         super.init()
         // 通过对象锁保证唯一
         objc_sync_enter(self)
-        xModel.xModelCount += 1
-        self.xid = xModel.xModelCount
+        xModel.xModelCreateCount += 1
+        self.xCreateNumber = xModel.xModelCreateCount
         objc_sync_exit(self)
     }
     
@@ -116,26 +102,35 @@ open class xModel: NSObject {
     /// - Returns: 对象
     public class func new(dict : [String : Any]?) -> Self?
     {
+        let classNameStr = NSStringFromClass(self.classForCoder())
         guard let info = dict else {
-            print("⚠️ 初始化数据为nil")
+            print("⚠️ 【\(classNameStr)】初始化失败")
+            print("初始化数据格式不对")
+            print(dict ?? "nil")
+            print("==================")
             return nil
         }
         guard info.keys.count != 0 else {
-            print("⚠️ 初始化数据内容为空")
+            print("⚠️ 【\(classNameStr)】初始化失败")
+            print("初始化数据内容为空")
+            print(info)
+            print("==================")
             return nil
         }
         // 获取类的元类型(Meta), 为 AnyClass 格式, 有 type(类型) 和 self(值) 两个参数, 可以以此调用该类下的方法(方法必须实现)
         // let test : MyModel.Type = MyModel.self
         guard let className = self.classForCoder() as? xModel.Type else {
-            let classStr = NSStringFromClass(self.classForCoder())
-            print("⚠️ 类型[\(classStr)]转换失败，不是继承于xModel")
+            print("⚠️ 【\(classNameStr)】初始化失败")
+            print("该对象不是继承于【xModel】")
+            print("==================")
             return nil
         }
         // 因为在 init() 前加了 required 关键词,保证了 xModel 类必定有 init() 构造方法,可以放心的调用
         let model = className.init()
         model.setValuesForKeys(info)
         // 保存原始字典
-        model.xOrigin = info
+        model.xOriginDictionary = info
+        model.setPropertyValuesCompleted()
         return model as? Self
     }
      
@@ -146,21 +141,19 @@ open class xModel: NSObject {
     public static func newList(with dataSource : Any?) -> [xModel]
     {
         var ret = [xModel]()
-        // 数组嵌字典
         if let infoList = dataSource as? [[String : Any]] {
+            // 数组嵌字典
             for info in infoList {
-                if let model = self.new(dict: info) {
-                    ret.append(model)
-                }
+                guard let model = self.new(dict: info) else { continue }
+                ret.append(model)
             }
-        }
-        // 字典嵌字典
-        else
-        if let infoList = dataSource as? [String : [String : Any]] {
-            for (_, info) in infoList {
-                if let model = self.new(dict: info) {
-                    ret.append(model)
-                }
+        } else if let infoList = dataSource as? [String : [String : Any]] {
+            // 字典嵌字典，先排序
+            let keys = infoList.keys.sorted()
+            for key in keys {
+                let info = infoList[key]
+                guard let model = self.new(dict: info) else { continue }
+                ret.append(model)
             }
         }
         return ret
@@ -184,15 +177,23 @@ open class xModel: NSObject {
     /// - Parameters:
     ///   - model: 要拼接的对象
     ///   - isCopyEmpty: 是否将空数据也拷进去
+    ///   - isForceCopy: 是否强制拷贝，不考虑继承关系
     /// - Returns: 拼接后的结果
     public func copyIvarData(from targetModel : xModel?,
-                             isCopyEmpty : Bool = false)
+                             isCopyEmpty : Bool = false,
+                             isForceCopy : Bool = false)
     {
         guard let target = targetModel else { return }
-        // 要拼接内容的对象必须于self同级或是self父级，key才能都找得到对应的value
-        guard self.isKind(of: target.classForCoder) else {
-            print("⚠️ 两个对象不是同源，无法拼接 : \(self.classForCoder) ≠ \(target.classForCoder)")
-            return
+        if isForceCopy {
+            // 强制拷贝不考虑其他因素
+        } else {
+            // 要拷贝的对象必须于self同级或是self父级，key才能都找得到对应的value
+            guard self.isKind(of: target.classForCoder) else {
+                print("⚠️ 数据拷贝失败")
+                print("\(self.classForCoder) ≠ \(target.classForCoder)")
+                print("==================")
+                return
+            }
         }
         for key in target.ivarList {
             let value = target.value(forKey: key)
@@ -200,13 +201,9 @@ open class xModel: NSObject {
             if isCopyEmpty == false {
                 if let obj = value as? String {
                     if obj.isEmpty { continue }
-                }
-                else
-                if let obj = value as? Array<Any> {
+                } else if let obj = value as? Array<Any> {
                     if obj.isEmpty { continue }
-                }
-                else
-                if let obj = value as? Dictionary<String, Any> {
+                } else if let obj = value as? Dictionary<String, Any> {
                     if obj.isEmpty { continue }
                 }
             }
@@ -253,6 +250,12 @@ open class xModel: NSObject {
             ret[key] = str
         }
         return ret
+    }
+    // MARK: - Open Func
+    /// 成员参数值设置完成
+    open func setPropertyValuesCompleted()
+    {
+        // 数据设置完成，可以进行下一步操作
     }
     
 }

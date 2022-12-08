@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'xModel'
-  s.version          = '1.0.4'
+  s.version          = '1.0.5'
   s.summary          = 'Swift xModel.'
   s.swift_version    = '5'      # Swift版本号
 
