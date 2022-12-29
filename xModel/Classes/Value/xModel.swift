@@ -61,9 +61,16 @@ open class xModel: NSObject {
             guard sobj.isMember(of: obj.classForCoder) else { return }
             sobj.copyIvarData(from: obj)
         } else {
-            print("⚠️ 成员变量的数据格式不是常用类型,请确认:\(key) = \(value!), \(type(of: value))")
-            super.setValue(value, forKey: key)
+            // 可能是枚举、对象啥的
+            self.setUncheckedValue(value, forKey: key)
         }
+    }
+    /// 设置未检验的值，默认直接赋值
+    open func setUncheckedValue(_ value: Any?,
+                                forKey key: String)
+    {
+        // print("⚠️ 成员变量的数据格式不是常用类型,请确认:\(key) = \(value!), \(type(of: value))")
+        super.setValue(value, forKey: key)
     }
     /// 找不到key对应的成员属性
     open override func setValue(_ value: Any?,
