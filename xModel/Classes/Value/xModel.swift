@@ -217,11 +217,10 @@ open class xModel: NSObject {
     public func toDictionary() -> [String : Any]
     {
         var ret = [String : Any]()
+        let filterKeyArray = ["xCreateNumber", "xDebugContent", "xOriginDictionary", "xIsLogModelNoPropertyTip"]
         for key in self.ivarList {
             // 过滤本地创建的数据
-            guard key != "xid" else { continue }
-            guard key != "xContent" else { continue }
-            guard key != "xOrigin" else { continue }
+            guard !filterKeyArray.contains(key) else { continue }
             guard let value = self.value(forKey: key) else { continue }
             // 递归继续拆分
             if let subObj = value as? xModel {
@@ -240,12 +239,8 @@ open class xModel: NSObject {
     public func toStringDictionary() -> [String : String]
     {
         var ret = [String : String]()
-        for key in self.ivarList {
-            // 过滤本地创建的数据
-            guard key != "xid" else { continue }
-            guard key != "xContent" else { continue }
-            guard key != "xOrigin" else { continue }
-            guard let value = self.value(forKey: key) else { continue }
+        let dict = self.toDictionary()
+        for (key, value) in dict {
             guard let str = value as? String else { continue }
             ret[key] = str
         }
