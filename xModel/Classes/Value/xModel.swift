@@ -23,9 +23,9 @@ open class xModel: NSObject {
     
     // MARK: - Private Property
     /// 计数器
-    private static var xModelCreateCount = 0
+    static var xModelCreateCount = 0
     /// 成员变量列表
-    private lazy var ivarList : [String] = {
+    lazy var ivarList : [String] = {
         let ret = xGetIvarList(obj: self)
         return ret
     }()
@@ -59,7 +59,7 @@ open class xModel: NSObject {
             guard let sobj = self.value(forKey: key) as? xModel else { return }
             // xLog(sobj, obj)
             guard sobj.isMember(of: obj.classForCoder) else { return }
-            sobj.copyIvarData(from: obj)
+            sobj.xCopyIvarData(from: obj)
         } else {
             // 可能是枚举、对象啥的
             self.setUncheckedValue(value, forKey: key)
@@ -101,158 +101,8 @@ open class xModel: NSObject {
         self.xCreateNumber = xModel.xModelCreateCount
         objc_sync_exit(self)
     }
-    
-    // MARK: - Public Func
-    // TODO: 实例化对象
-    /// 实例化对象
-    /// - Parameter info: 对象信息字典
-    /// - Returns: 对象
-    public class func new(dict : [String : Any]?) -> Self?
-    {
-        let classNameStr = NSStringFromClass(self.classForCoder())
-        guard let info = dict else {
-            print("⚠️ 【\(classNameStr)】初始化失败")
-            print("初始化数据格式不对")
-            print(dict ?? "nil")
-            print("==================")
-            return nil
-        }
-        guard info.keys.count != 0 else {
-            print("⚠️ 【\(classNameStr)】初始化失败")
-            print("初始化数据内容为空")
-            print(info)
-            print("==================")
-            return nil
-        }
-        // 获取类的元类型(Meta), 为 AnyClass 格式, 有 type(类型) 和 self(值) 两个参数, 可以以此调用该类下的方法(方法必须实现)
-        // let test : MyModel.Type = MyModel.self
-        guard let className = self.classForCoder() as? xModel.Type else {
-            print("⚠️ 【\(classNameStr)】初始化失败")
-            print("该对象不是继承于【xModel】")
-            print("==================")
-            return nil
-        }
-        // 因为在 init() 前加了 required 关键词,保证了 xModel 类必定有 init() 构造方法,可以放心的调用
-        let model = className.init()
-        model.setValuesForKeys(info)
-        // 保存原始字典
-        model.xOriginDictionary = info
-        model.setPropertyValuesCompleted()
-        return model as? Self
-    }
      
-    /// 格式化model数组
-    /// - Parameters:
-    ///   - classType: model类型
-    ///   - dataSource: 数据源
-    public static func newList(with dataSource : Any?) -> [xModel]
-    {
-        var ret = [xModel]()
-        if let infoList = dataSource as? [[String : Any]] {
-            // 数组嵌字典
-            for info in infoList {
-                guard let model = self.new(dict: info) else { continue }
-                ret.append(model)
-            }
-        } else if let infoList = dataSource as? [String : [String : Any]] {
-            // 字典嵌字典，先排序
-            let keys = infoList.keys.sorted()
-            for key in keys {
-                let info = infoList[key]
-                guard let model = self.new(dict: info) else { continue }
-                ret.append(model)
-            }
-        }
-        return ret
-    }
     
-    /// 创建随机数据列表
-    /// - Parameter count: 数据个数
-    /// - Returns: 数据列表
-    public static func newRandomList(count : Int = 10) -> [xModel]
-    {
-        var ret = [xModel]()
-        for _ in 0 ..< count {
-            let model = xModel()
-            ret.append(model)
-        }
-        return ret
-    }
-    
-    // TODO: 从指定对象中拷贝成员变量
-    /// 从指定对象中拷贝成员变量
-    /// - Parameters:
-    ///   - model: 要拼接的对象
-    ///   - isCopyEmpty: 是否将空数据也拷进去
-    ///   - isForceCopy: 是否强制拷贝，不考虑继承关系
-    /// - Returns: 拼接后的结果
-    public func copyIvarData(from targetModel : xModel?,
-                             isCopyEmpty : Bool = false,
-                             isForceCopy : Bool = false)
-    {
-        guard let target = targetModel else { return }
-        if isForceCopy {
-            // 强制拷贝不考虑其他因素
-        } else {
-            // 要拷贝的对象必须于self同级或是self父级，key才能都找得到对应的value
-            guard self.isKind(of: target.classForCoder) else {
-                print("⚠️ 数据拷贝失败")
-                print("\(self.classForCoder) ≠ \(target.classForCoder)")
-                print("==================")
-                return
-            }
-        }
-        for key in target.ivarList {
-            let value = target.value(forKey: key)
-            // 如果不执行替换空数据操作，则跳过
-            if isCopyEmpty == false {
-                if let obj = value as? String {
-                    if obj.isEmpty { continue }
-                } else if let obj = value as? Array<Any> {
-                    if obj.isEmpty { continue }
-                } else if let obj = value as? Dictionary<String, Any> {
-                    if obj.isEmpty { continue }
-                }
-            }
-            self.setValue(value, forKey: key)
-        }
-    }
-    
-    // TODO:  数据转换
-    /// 转换成成员属性字典
-    /// - Returns: 生成的字典
-    public func toDictionary() -> [String : Any]
-    {
-        var ret = [String : Any]()
-        let filterKeyArray = ["xCreateNumber", "xDebugContent", "xOriginDictionary", "xIsLogModelNoPropertyTip"]
-        for key in self.ivarList {
-            // 过滤本地创建的数据
-            guard !filterKeyArray.contains(key) else { continue }
-            guard let value = self.value(forKey: key) else { continue }
-            // 递归继续拆分
-            if let subObj = value as? xModel {
-                let subRet = subObj.toDictionary()
-                ret[key] = subRet
-            }
-            else {
-                ret[key] = value
-            }
-        }
-        return ret
-    }
-    
-    /// 转换成成员属性字典(字符串成员)
-    /// - Returns: 生成的字典
-    public func toStringDictionary() -> [String : String]
-    {
-        var ret = [String : String]()
-        let dict = self.toDictionary()
-        for (key, value) in dict {
-            guard let str = value as? String else { continue }
-            ret[key] = str
-        }
-        return ret
-    }
     // MARK: - Open Func
     /// 成员参数值设置完成
     open func setPropertyValuesCompleted()
