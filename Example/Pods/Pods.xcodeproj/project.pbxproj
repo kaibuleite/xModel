@@ -8,9 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		02047C25733F7786212640966C0ADA2F /* xModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F982DEF7004AC9FC337091545D8BD50 /* xModel.swift */; };
-		04F7ADDA29D55B5500C74A7D /* xModel+xToValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F7ADD929D55B5500C74A7D /* xModel+xToValue.swift */; };
-		04F7ADDC29D55BA600C74A7D /* xModel+xNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F7ADDB29D55BA600C74A7D /* xModel+xNew.swift */; };
-		04F7ADDE29D55D5A00C74A7D /* xModel+xRead.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F7ADDD29D55D5A00C74A7D /* xModel+xRead.swift */; };
+		04F7ADDA29D55B5500C74A7D /* xModel+ToValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F7ADD929D55B5500C74A7D /* xModel+ToValue.swift */; };
+		04F7ADDC29D55BA600C74A7D /* xModel+New.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F7ADDB29D55BA600C74A7D /* xModel+New.swift */; };
+		04F7ADDE29D55D5A00C74A7D /* xModel+Read.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F7ADDD29D55D5A00C74A7D /* xModel+Read.swift */; };
 		0550891AF049C68991AE02F4DAF5DD08 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */; };
 		1ECCCD6EFCC47AF907041F7422033C8B /* Pods-xModel_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = DC72F73845B586E639DEB0F7B4BA2D4F /* Pods-xModel_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		26C28D14A9E76A20EEEAEEA0487084D3 /* xModel-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 019D949EA0835D7E5D6DA703D9291E81 /* xModel-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -44,9 +44,9 @@
 
 /* Begin PBXFileReference section */
 		019D949EA0835D7E5D6DA703D9291E81 /* xModel-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "xModel-umbrella.h"; sourceTree = "<group>"; };
-		04F7ADD929D55B5500C74A7D /* xModel+xToValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xModel+xToValue.swift"; sourceTree = "<group>"; };
-		04F7ADDB29D55BA600C74A7D /* xModel+xNew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xModel+xNew.swift"; sourceTree = "<group>"; };
-		04F7ADDD29D55D5A00C74A7D /* xModel+xRead.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xModel+xRead.swift"; sourceTree = "<group>"; };
+		04F7ADD929D55B5500C74A7D /* xModel+ToValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xModel+ToValue.swift"; sourceTree = "<group>"; };
+		04F7ADDB29D55BA600C74A7D /* xModel+New.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xModel+New.swift"; sourceTree = "<group>"; };
+		04F7ADDD29D55D5A00C74A7D /* xModel+Read.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "xModel+Read.swift"; sourceTree = "<group>"; };
 		0B13CFC9F7F20E35CD85170F7D2742FE /* xModel-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "xModel-prefix.pch"; sourceTree = "<group>"; };
 		154F127A44E093686FF4312589632983 /* xModel.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = xModel.modulemap; sourceTree = "<group>"; };
 		1B9BD79B5E3E2BE35D5106196F6E0883 /* xIvar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = xIvar.swift; sourceTree = "<group>"; };
@@ -204,9 +204,9 @@
 			isa = PBXGroup;
 			children = (
 				7F982DEF7004AC9FC337091545D8BD50 /* xModel.swift */,
-				04F7ADDD29D55D5A00C74A7D /* xModel+xRead.swift */,
-				04F7ADDB29D55BA600C74A7D /* xModel+xNew.swift */,
-				04F7ADD929D55B5500C74A7D /* xModel+xToValue.swift */,
+				04F7ADDB29D55BA600C74A7D /* xModel+New.swift */,
+				04F7ADDD29D55D5A00C74A7D /* xModel+Read.swift */,
+				04F7ADD929D55B5500C74A7D /* xModel+ToValue.swift */,
 				CA28C5EA412C8928871A27E915F5AE64 /* xPage.swift */,
 			);
 			name = Value;
@@ -413,11 +413,11 @@
 			files = (
 				922BA5162E849B5950AD16E63088C273 /* ReplaceMe.swift in Sources */,
 				BE32E42F03A39A316D4B2814C0F4DD3F /* xIvar.swift in Sources */,
-				04F7ADDA29D55B5500C74A7D /* xModel+xToValue.swift in Sources */,
+				04F7ADDA29D55B5500C74A7D /* xModel+ToValue.swift in Sources */,
 				C11F4473489FD8E9B5D6FE7C7EDBDB47 /* xModel-dummy.m in Sources */,
 				02047C25733F7786212640966C0ADA2F /* xModel.swift in Sources */,
-				04F7ADDE29D55D5A00C74A7D /* xModel+xRead.swift in Sources */,
-				04F7ADDC29D55BA600C74A7D /* xModel+xNew.swift in Sources */,
+				04F7ADDE29D55D5A00C74A7D /* xModel+Read.swift in Sources */,
+				04F7ADDC29D55BA600C74A7D /* xModel+New.swift in Sources */,
 				50DC8D96CA16A25DFBC23B06E2F02D5F /* xPage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

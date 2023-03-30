@@ -1,5 +1,5 @@
 //
-//  xModel+xToValue.swift
+//  xModel+ToValue.swift
 //  xModel
 //
 //  Created by Mac on 2023/3/30.
@@ -12,7 +12,7 @@ extension xModel {
     // MARK: - 数据转换
     /// 转换成成员属性字典
     /// - Returns: 生成的字典
-    public func xToDictionary() -> [String : Any]
+    public func toDictionary() -> [String : Any]
     {
         var ret = [String : Any]()
         let filterKeyArray = ["xCreateNumber", "xDebugContent", "xOriginDictionary", "xIsLogModelNoPropertyTip"]
@@ -22,7 +22,7 @@ extension xModel {
             guard let value = self.value(forKey: key) else { continue }
             // 递归继续拆分
             if let subObj = value as? xModel {
-                let subRet = subObj.xToDictionary()
+                let subRet = subObj.toDictionary()
                 ret[key] = subRet
             }
             else {
@@ -34,10 +34,10 @@ extension xModel {
     
     /// 转换成成员属性字典(字符串成员)
     /// - Returns: 生成的字典
-    public func xToStringDictionary() -> [String : String]
+    public func toStringDictionary() -> [String : String]
     {
         var ret = [String : String]()
-        let dict = self.xToDictionary()
+        let dict = self.toDictionary()
         for (key, value) in dict {
             guard let str = value as? String else { continue }
             ret[key] = str

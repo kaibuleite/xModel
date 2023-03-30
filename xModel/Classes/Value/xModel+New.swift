@@ -13,19 +13,17 @@ extension xModel {
     /// 实例化对象
     /// - Parameter info: 对象信息字典
     /// - Returns: 对象
-    public class func xNew(dict : [String : Any]?) -> Self?
+    public class func new(dict : [String : Any]?) -> Self?
     {
         let classNameStr = NSStringFromClass(self.classForCoder())
         guard let info = dict else {
-            print("⚠️ 【\(classNameStr)】初始化失败")
-            print("初始化数据格式不对")
+            print("⚠️ 【\(classNameStr)】初始化失败：初始化数据格式不对")
             print(dict ?? "nil")
             print("==================")
             return nil
         }
         guard info.keys.count != 0 else {
-            print("⚠️ 【\(classNameStr)】初始化失败")
-            print("初始化数据内容为空")
+            print("⚠️ 【\(classNameStr)】初始化失败：初始化数据内容为空")
             print(info)
             print("==================")
             return nil
@@ -33,8 +31,7 @@ extension xModel {
         // 获取类的元类型(Meta), 为 AnyClass 格式, 有 type(类型) 和 self(值) 两个参数, 可以以此调用该类下的方法(方法必须实现)
         // let test : MyModel.Type = MyModel.self
         guard let className = self.classForCoder() as? xModel.Type else {
-            print("⚠️ 【\(classNameStr)】初始化失败")
-            print("该对象不是继承于【xModel】")
+            print("⚠️ 【\(classNameStr)】初始化失败：该对象不是继承于【xModel】")
             print("==================")
             return nil
         }
@@ -52,13 +49,13 @@ extension xModel {
     /// - Parameters:
     ///   - classType: model类型
     ///   - dataSource: 数据源
-    public static func xNewList(with dataSource : Any?) -> [xModel]
+    public static func newList(with dataSource : Any?) -> [xModel]
     {
         var ret = [xModel]()
         if let infoList = dataSource as? [[String : Any]] {
             // 数组嵌字典
             for info in infoList {
-                guard let model = self.xNew(dict: info) else { continue }
+                guard let model = self.new(dict: info) else { continue }
                 ret.append(model)
             }
         } else if let infoList = dataSource as? [String : [String : Any]] {
@@ -66,7 +63,7 @@ extension xModel {
             let keys = infoList.keys.sorted()
             for key in keys {
                 let info = infoList[key]
-                guard let model = self.xNew(dict: info) else { continue }
+                guard let model = self.new(dict: info) else { continue }
                 ret.append(model)
             }
         }
@@ -76,7 +73,7 @@ extension xModel {
     /// 创建随机数据列表
     /// - Parameter count: 数据个数
     /// - Returns: 数据列表
-    public static func xNewRandomList(count : Int = 10) -> [xModel]
+    public static func newRandomList(count : Int = 10) -> [xModel]
     {
         var ret = [xModel]()
         for _ in 0 ..< count {
