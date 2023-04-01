@@ -59,7 +59,7 @@ open class xModel: NSObject {
             guard let sobj = self.value(forKey: key) as? xModel else { return }
             // xLog(sobj, obj)
             guard sobj.isMember(of: obj.classForCoder) else { return }
-            sobj.xCopyIvarData(from: obj)
+            sobj.copyIvarData(from: obj)
         } else {
             // 可能是枚举、对象啥的
             self.setUncheckedValue(value, forKey: key)
