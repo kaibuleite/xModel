@@ -112,9 +112,13 @@ extension xModel {
             if isCopyEmpty == false {
                 if let obj = value as? String {
                     if obj.isEmpty { continue }
-                } else if let obj = value as? Array<Any> {
+                }
+                else
+                if let obj = value as? Array<Any> {
                     if obj.isEmpty { continue }
-                } else if let obj = value as? Dictionary<String, Any> {
+                }
+                else
+                if let obj = value as? Dictionary<String, Any> {
                     if obj.isEmpty { continue }
                 }
             }
