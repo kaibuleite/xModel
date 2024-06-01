@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'xModel'
-  s.version          = '1.1.1'
+  s.version          = '1.1.2'
   s.summary          = 'Swift xModel.'
   s.swift_version    = '5'      # Swift版本号
 
@@ -29,7 +29,7 @@ TODO: Add long description of the pod here.
   s.source           = { :git => 'https://github.com/kaibuleite/xModel.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '12.0'
+  s.ios.deployment_target = '13.0'
 
   s.source_files = 'xModel/Classes/**/*'
   

@@ -1,5 +1,5 @@
 PODS:
-  - xModel (1.0.3)
+  - xModel (1.1.2)
 
 DEPENDENCIES:
   - xModel (from `../`)
@@ -9,8 +9,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  xModel: 7a9309b181e1e23611272f3a95e42b052585efd5
+  xModel: e87ef865fad1873243328135d28aca17bf48c7b6
 
-PODFILE CHECKSUM: ee1b009992dd34bed8f51210efb6b015f37b8aac
+PODFILE CHECKSUM: 915f95aa983fddfc5048cfe61050a1db45e5fb48
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.15.2
