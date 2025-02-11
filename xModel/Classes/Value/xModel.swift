@@ -5,7 +5,7 @@
 //  Created by Mac on 2020/9/14.
 //
 
-import UIKit
+import Foundation
 
 @objcMembers // 使用kvc必须添加(或者在变量前添加 @objc 标识符)
 
@@ -18,6 +18,8 @@ open class xModel: NSObject {
     public var xDebugContent = "测试内容:\(arc4random() % 10000)"
     /// 原始字典
     public var xOriginDictionary = [String : Any]()
+    /// 附加信息
+    public var xExInfo = [String : Any]()
     /// 是否打印服务器缺失成员变量（默认不打印）
     open var xIsLogModelNoPropertyTip : Bool { return false }
     
@@ -36,30 +38,26 @@ open class xModel: NSObject {
                                 forKey key: String)
     {
         guard value != nil else { return }
-        if let obj = value as? String {
-            // 字符串类型直接赋值
-            super.setValue(obj, forKey: key)
-        } else if let obj = value as? Int {
-            // 数字类型转换成字符串
-            super.setValue(String(obj), forKey: key)
-        } else if let obj = value as? Float {
-            // 数字类型转换成字符串
-            super.setValue(String(obj), forKey: key)
-        } else if let obj = value as? Double {
-            // 数字类型转换成字符串
-            super.setValue(String(obj), forKey: key)
-        } else if let obj = value as? Array<Any> {
-            // 数组类型直接赋值
-            super.setValue(obj, forKey: key)
-        } else if let obj = value as? Dictionary<String, Any> {
-            // 字典类型直接赋值
-            super.setValue(obj, forKey: key)
-        } else if let obj = value as? xModel {
+        if value is String ||
+           value is Array<Any> ||
+           value is Dictionary<String, Any>
+        {
+            // 字符串、数组、字典类型直接赋值
+            super.setValue(value, forKey: key)
+        } else
+        if let obj = value as? NSNumber {
+            // 数字类型转换成字符串(JSON 串被转换成 Dictionary 后会将基本数值类型转换成__NSCFNumber)
+            let doubleValue = String(format: "%f", obj.doubleValue)
+            let decimalValue = NSDecimalNumber.init(string: doubleValue)
+            let stringValue = decimalValue.stringValue
+            super.setValue(stringValue, forKey: key)
+        } else
+        if let obj = value as? xModel {
             // xModel对象类型
-            guard let sobj = self.value(forKey: key) as? xModel else { return }
-            // xLog(sobj, obj)
-            guard sobj.isMember(of: obj.classForCoder) else { return }
-            sobj.copyIvarData(from: obj)
+            guard let model = self.value(forKey: key) as? xModel else { return }
+            // xLog(model, obj)
+            guard model.isMember(of: obj.classForCoder) else { return }
+            model.copyIvarData(from: obj)
         } else {
             // 可能是枚举、对象啥的
             self.setUncheckedValue(value, forKey: key)

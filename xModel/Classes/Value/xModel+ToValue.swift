@@ -15,7 +15,11 @@ extension xModel {
     public func toDictionary() -> [String : Any]
     {
         var ret = [String : Any]()
-        let filterKeyArray = ["xCreateNumber", "xDebugContent", "xOriginDictionary", "xIsLogModelNoPropertyTip"]
+        let filterKeyArray = ["xCreateNumber",
+                              "xDebugContent",
+                              "xOriginDictionary",
+                              "xExInfo",
+                              "xIsLogModelNoPropertyTip"]
         for key in self.ivarList {
             // 过滤本地创建的数据
             guard !filterKeyArray.contains(key) else { continue }
